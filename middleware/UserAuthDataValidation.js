@@ -86,7 +86,6 @@ exports. loginValidationRules = [
 
   // Handle validation errors for login
 (req, res, next) => {
-  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
