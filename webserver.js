@@ -14,7 +14,7 @@ const seedBasicSiteSettingsCollection = require("./seedBasicSiteSettingCollectio
 let app = express();
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://visitcopenhagen-site-backend.onrender.com/"
+  "https://visit-copen-hagen-site-frontend.vercel.app"
 ];
 app.use(cors({
   origin:  allowedOrigins,
