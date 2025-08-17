@@ -8,7 +8,8 @@ let {
   getAllUsers,
   getUserById,
   loginUser,
-  checkAuth
+  checkAuth,
+  refreshToken
 } = require("../controller/AuthController.js");
 
 // API route for registering a new user with profile image upload
@@ -19,6 +20,8 @@ userRoutes.post("/login",UserAuthDataValidation.loginValidationRules, loginUser)
 
 // API route for checking if user is authenticated
 userRoutes.get("/check-auth", checkAuth);
+
+userRoutes.post("/refresh", refreshToken);
 
 // API route for checking if a user exists by username
 userRoutes.get("/user-check", getUserByUsername);

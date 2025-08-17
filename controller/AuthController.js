@@ -1,6 +1,8 @@
 let userModel = require("../model/Auth.model.js");
 let jwt = require("jsonwebtoken");
 let bcrypt = require("bcrypt");
+const JWT_SECRET = process.env.JWT_SECRET || "9FXNRIKV58QTN5Qe";
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "10FXNRIKV58QTN5Qe";
 
 // Register a new user
 let registerUser = async (req, res) => {
@@ -69,14 +71,14 @@ let loginUser = async (req, res) => {
         id: user._id,
         username: user.username,
       },
-    process.env.JWT_SECRET || "Qw8!vZ2@rT7#pL6$eF9^bN4&xS1*oM3%jH5",
+    JWT_SECRET,
      {expiresIn: "1h"});
 
     // Generate refresh token (7 or 30 days)
     const refreshToken = jwt.sign( {
         id: user._id,
         username: user.username,
-      }, process.env.REFRESH_TOKEN_SECRET || "R7!kLp2@xV9#zQ4$wT8^nB3&sF6*mJ1%yH0", {
+      }, REFRESH_TOKEN_SECRET, {
       expiresIn: remember_me
         ? "30d"
         : "7d"
@@ -155,60 +157,117 @@ let getUserById = async (req, res) => {
 };
 
 // Check if user is authenticated and refresh token if needed
+// const checkAuth = async (req, res) => {
+//   try {
+//     const authHeader = req.headers["authorization"];
+//     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//       return res.status(401).json({isAuthenticated: false, message: "No token provided", status: "Error"});
+//     }
+//     const token = authHeader.split(" ")[1];
+//     jwt.verify(token, JWT_SECRET || "Qw8!vZ2@rT7#pL6$eF9^bN4&xS1*oM3%jH5", async (err, decoded) => {
+//       if (err && err.name === "TokenExpiredError") {
+//         // If access token expired, try to verify refresh token
+//         const refreshToken = req.cookies && req.cookies.refreshToken;
+//         if (!refreshToken) {
+//           return res.status(401).json({isAuthenticated: false, message: "Session expired. Please login again.", status: "Error"});
+//         }
+//         jwt.verify(refreshToken, REFRESH_TOKEN_SECRET || "R7!kLp2@xV9#zQ4$wT8^nB3&sF6*mJ1%yH0", async (refreshErr, refreshDecoded) => {
+//           if (refreshErr) {
+//             return res.status(401).json({isAuthenticated: false, message: "Refresh token expired. Please login again.", status: "Error"});
+//           }
+//           // Generate new access token
+//           const newAccessToken = jwt.sign({
+//             id: refreshDecoded.id,
+//             username: refreshDecoded.username
+//           }, JWT_SECRET || "Qw8!vZ2@rT7#pL6$eF9^bN4&xS1*oM3%jH5", {expiresIn: "1h"});
+
+//           // Get user info from DB
+//           const user = await userModel.findById(refreshDecoded.id).select("-password -confirm_password");
+//           if (!user) {
+//             return res.status(401).json({isAuthenticated: false, message: "User not found", status: "Error"});
+//           }
+//           // Return refreshed token and user info
+//           return res.status(200).json({isAuthenticated: true, user, accessToken: newAccessToken, status: "Success", message: "Token refreshed"});
+//         });
+//         return;
+//       } else if (err) {
+//         return res.status(401).json({isAuthenticated: false, message: "Invalid or expired token", status: "Error"});
+//       }
+//       // Get user info from DB
+//       const user = await userModel.findById(decoded.id).select("-password -confirm_password");
+//       if (!user) {
+//         return res.status(401).json({isAuthenticated: false, message: "User not found", status: "Error"});
+//       }
+//       // Return user info if authenticated
+//       return res.status(200).json({isAuthenticated: true, user, status: "Success"});
+//     });
+//   } catch (error) {
+//     return res.status(500).json({isAuthenticated: false, message: error.message, status: "Error"});
+//   }
+// };
+
+// A separate, clean checkAuth endpoint
 const checkAuth = async (req, res) => {
   try {
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({isAuthenticated: false, message: "No token provided", status: "Error"});
+      return res.status(401).json({ isAuthenticated: false, message: "No token provided." });
     }
     const token = authHeader.split(" ")[1];
-    jwt.verify(token, process.env.JWT_SECRET || "Qw8!vZ2@rT7#pL6$eF9^bN4&xS1*oM3%jH5", async (err, decoded) => {
-      if (err && err.name === "TokenExpiredError") {
-        // If access token expired, try to verify refresh token
-        const refreshToken = req.cookies && req.cookies.refreshToken;
-        if (!refreshToken) {
-          return res.status(401).json({isAuthenticated: false, message: "Session expired. Please login again.", status: "Error"});
-        }
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || "R7!kLp2@xV9#zQ4$wT8^nB3&sF6*mJ1%yH0", async (refreshErr, refreshDecoded) => {
-          if (refreshErr) {
-            return res.status(401).json({isAuthenticated: false, message: "Refresh token expired. Please login again.", status: "Error"});
-          }
-          // Generate new access token
-          const newAccessToken = jwt.sign({
-            id: refreshDecoded.id,
-            username: refreshDecoded.username
-          }, process.env.JWT_SECRET || "Qw8!vZ2@rT7#pL6$eF9^bN4&xS1*oM3%jH5", {expiresIn: "1h"});
-
-          // Get user info from DB
-          const user = await userModel.findById(refreshDecoded.id).select("-password -confirm_password");
-          if (!user) {
-            return res.status(401).json({isAuthenticated: false, message: "User not found", status: "Error"});
-          }
-          // Return refreshed token and user info
-          return res.status(200).json({isAuthenticated: true, user, accessToken: newAccessToken, status: "Success", message: "Token refreshed"});
-        });
-        return;
-      } else if (err) {
-        return res.status(401).json({isAuthenticated: false, message: "Invalid or expired token", status: "Error"});
+    
+    // Asynchronous version to handle a potentially expired token
+    jwt.verify(token, JWT_SECRET, async (err, decoded) => {
+      if (err) {
+        // This is the correct place to handle all errors, including expiration
+        return res.status(401).json({ isAuthenticated: false, message: "Invalid or expired token." });
       }
-      // Get user info from DB
+      
       const user = await userModel.findById(decoded.id).select("-password -confirm_password");
       if (!user) {
-        return res.status(401).json({isAuthenticated: false, message: "User not found", status: "Error"});
+        return res.status(401).json({ isAuthenticated: false, message: "User not found." });
       }
-      // Return user info if authenticated
-      return res.status(200).json({isAuthenticated: true, user, status: "Success"});
+      
+      return res.status(200).json({ isAuthenticated: true, user });
     });
   } catch (error) {
-    return res.status(500).json({isAuthenticated: false, message: error.message, status: "Error"});
+    return res.status(500).json({ message: "Server error." });
   }
 };
 
+
+
+const refreshToken = async (req, res) => {
+  const refreshToken = req.cookies?.refreshToken;
+  
+  if (!refreshToken) {
+    return res.status(401).json({ isAuthenticated: false, message: "Refresh token not provided." });
+  }
+  
+  try {
+    // Verify the refresh token using its unique secret key
+    const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+
+    // Generate a new access token using the JWT secret key
+    const newAccessToken = jwt.sign({ id: decoded.id, username: decoded.username, role: decoded.role }, JWT_SECRET, { expiresIn: "1h" });
+    
+    // Send back the new access token
+    return res.status(200).json({ isAuthenticated: true, accessToken: newAccessToken });
+
+  } catch (err) {
+    // If verification fails, the refresh token is invalid or expired
+    console.error("Refresh token verification failed:", err.message);
+    res.clearCookie('refreshToken');
+    return res.status(401).json({ isAuthenticated: false, message: "Invalid or expired refresh token. Please log in again." });
+  }
+};
+
+// Exporting all functions
 module.exports = {
   registerUser,
   getUserByUsername,
   getAllUsers,
   getUserById,
   loginUser,
-  checkAuth
+  checkAuth,
+  refreshToken
 };
