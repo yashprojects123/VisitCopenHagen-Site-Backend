@@ -42,5 +42,4 @@ let userSchema = require("mongoose").Schema({
 
 
 let userModel = require("mongoose").model("User", userSchema);
-
 module.exports = userModel;

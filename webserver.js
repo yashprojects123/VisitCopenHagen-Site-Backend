@@ -9,6 +9,7 @@ let path = require("path");
 let { backendHomepageMarkup } = require("./utils/BackendHomepage.js");
 const seedAdmin = require("./seedAdmin.js");
 const seedBasicSiteSettingsCollection = require("./seedBasicSiteSettingCollection.js");
+const DynamicPageRoutes = require("./routes/DynamicPageRoutes.js");
 
 
 let app = express();
@@ -27,6 +28,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Api routes attachment
 app.use('/api', MenuApiRoutes);
+app.use('/api', DynamicPageRoutes);
 app.use('/api', userRoutes);
 app.use('/api', siteSettingsRoute);
 

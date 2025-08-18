@@ -33,8 +33,10 @@ let registerUser = async (req, res) => {
     res.status(201).json({user_data: userData, message: "User registered successfully", status: "Success"});
  } catch (error) {
   console.error("User registration failed:");
-  console.error(error); // logs the full error object
-  console.error(error.stack); // logs stack trace
+ if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+    // Send a specific 409 Conflict status for a unique constraint error
+    return res.status(409).json({ user_data:null, message: "Email already exists.", error: error, status: "Error" });
+  }
   res.status(500).json({
     user_data: null,
     message: error.message,
@@ -96,11 +98,7 @@ let loginUser = async (req, res) => {
 
     // Send user data and tokens
     res.status(200).json({
-      user_data: {
-        id: user._id,
-        username: user.username,
-        role: user.role,
-      },
+      user_data: user,
       accessToken,
       message: "Login successful",
       status: "Success"
