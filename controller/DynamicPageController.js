@@ -12,8 +12,6 @@ const DynamicPageModel = require('../model/DynamicPage.model.js');
 const addNewPage = async (req, res) => {
     try {
         const newPageData = req.body;
-
-       
         if (!newPageData.id || !newPageData.title || !newPageData.sections) {
             return res.status(400).json({
                 status: "Error",
