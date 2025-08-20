@@ -1,6 +1,10 @@
 let DynamicPageRoutes = require('express').Router();
-let { addNewPage } = require('../controller/DynamicPageController.js');
+let { addNewPage, checkPageExists, getPage } = require('../controller/DynamicPageController.js');
 
 DynamicPageRoutes.post('/add-new-page', addNewPage);
+
+DynamicPageRoutes.get('/page/:slug', getPage);
+
+DynamicPageRoutes.get('/check-page-exists/:slug', checkPageExists);
 
 module.exports = DynamicPageRoutes;
