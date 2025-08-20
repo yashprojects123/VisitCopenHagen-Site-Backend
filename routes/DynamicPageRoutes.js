@@ -5,6 +5,6 @@ DynamicPageRoutes.post('/add-new-page', addNewPage);
 
 DynamicPageRoutes.get('/page/:slug', getPage);
 
-DynamicPageRoutes.get('/check-page-exists/:slug', checkPageExists);
+DynamicPageRoutes.get('/check-page-exists', checkPageExists);
 
 module.exports = DynamicPageRoutes;
