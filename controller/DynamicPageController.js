@@ -106,16 +106,16 @@ let getPage = async (req,res) =>{
 
 let checkPageExists = async (req, res) => {
     try {
-        const pageSlug = req.params.slug; 
+        const pageTitle = req.query.title; 
 
-        if (!pageSlug) {    
+        if (!pageTitle) {    
             return res.status(400).json({
                 status: "Error",
                 success: false,
-                message: 'Page slug is required.'
+                message: 'Page title is required.'
             });
         }
-        const page = await DynamicPageModel.findOne({ slug: pageSlug });
+        const page = await DynamicPageModel.findOne({ title: pageTitle });
 
         if (!page) {
             return res.status(404).json({
