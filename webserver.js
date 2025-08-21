@@ -15,6 +15,8 @@ const {upload,handleImageUploadAndDeduplication, multerErrorHandler} = require("
 let app = express();
 const allowedOrigins = [
   "http://localhost:5173",
+   "http://localhost:5174",
+    "http://localhost:5175",
   "https://visit-copen-hagen-site-frontend.vercel.app"
 ];
 app.use(cors({

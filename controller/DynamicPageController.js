@@ -104,6 +104,47 @@ let getPage = async (req,res) =>{
     }
 }
 
+
+let editPage = async() => {
+try {
+        const pageSlug = req.params.slug; // Assuming the page ID is passed as a URL parameter
+
+        // Find the page by Slug
+        if (!pageSlug) {    
+            return res.status(400).json({
+                status: "Error",
+                success: false,
+                message: 'Page slug is required.'
+            });
+        }
+        const page = await DynamicPageModel.findOne({ slug: pageSlug });
+
+        if (!page) {
+            return res.status(404).json({
+                status: "Error",
+                success: false,
+                message: 'Page not found.'
+            });
+        }
+
+        // Return the found page
+        res.status(200).json({
+            success: true,
+            message: 'Page retrieved successfully.',
+            page: page
+        });
+
+    } catch (error) {
+        console.error('Error retrieving page:', error);
+        res.status(500).json({
+            status: "Error",
+            success: false,
+            message: 'Failed to retrieve page. Please try again later.',
+            error: error.message // Send error message for debugging in development
+        });
+    }
+}
+
 let checkPageExists = async (req, res) => {
     try {
         const pageTitle = req.query.title; 
