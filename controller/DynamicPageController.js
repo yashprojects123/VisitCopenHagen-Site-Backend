@@ -66,7 +66,7 @@ const addNewPage = async (req, res) => {
 
 let getPage = async (req,res) =>{
     try {
-        const pageSlug = req.params.slug; // Assuming the page ID is passed as a URL parameter
+        const pageSlug = req.params.slug; 
 
         // Find the page by Slug
         if (!pageSlug) {    
@@ -107,7 +107,7 @@ let getPage = async (req,res) =>{
 
 let editPage = async() => {
 try {
-        const pageSlug = req.params.slug; // Assuming the page ID is passed as a URL parameter
+        const pageSlug = req.params.slug; 
 
         // Find the page by Slug
         if (!pageSlug) {    
@@ -127,19 +127,33 @@ try {
             });
         }
 
-        // Return the found page
-        res.status(200).json({
-            success: true,
-            message: 'Page retrieved successfully.',
-            page: page
-        });
+        const data= req.body;
+        const updatedPage = await DynamicPageModel.updateOne({ slug: pageSlug },{$set: {
+            title: data.title,
+            sections: data.sections
+        }})
+
+        if(updatedPage){
+            return res.status(200).json({
+                status: "Success",
+                success: true,
+                message: 'Page  updated successfully.'
+            });
+        }
+        else{
+            return res.status(404).json({
+                status: "Error",
+                success: false,
+                message: 'Failed to update page!  Please try again later...'
+            });
+        }
 
     } catch (error) {
-        console.error('Error retrieving page:', error);
+        console.error('Error updating page:', error);
         res.status(500).json({
             status: "Error",
             success: false,
-            message: 'Failed to retrieve page. Please try again later.',
+            message: 'Failed to update page. Please try again later.',
             error: error.message // Send error message for debugging in development
         });
     }
@@ -188,5 +202,6 @@ let checkPageExists = async (req, res) => {
 module.exports = {
     addNewPage,
     getPage,
-    checkPageExists
+    checkPageExists,
+    editPage
 };

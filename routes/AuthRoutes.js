@@ -21,6 +21,7 @@ userRoutes.post("/login",UserAuthDataValidation.loginValidationRules, loginUser)
 // API route for checking if user is authenticated
 userRoutes.get("/check-auth", checkAuth);
 
+// API route for accessing refresh token
 userRoutes.post("/refresh", refreshToken);
 
 // API route for checking if a user exists by username
