@@ -89,7 +89,8 @@ const handleImageUploadAndDeduplication = async (req, res, next) => {
             const fileExtension = path.extname(file.originalname).toLowerCase();
             const finalFileName = `${fileHash}${fileExtension}`;
             const filePathOnDisk = path.join(uploadDir, finalFileName);
-            const imageUrl = `/uploads/${finalFileName}`;
+            const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${finalFileName}`;
+
 
             let isNewUpload = true; 
 

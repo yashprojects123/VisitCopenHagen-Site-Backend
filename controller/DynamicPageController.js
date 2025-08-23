@@ -1,5 +1,3 @@
-// controllers/pageController.js
-
 const DynamicPageModel = require('../model/DynamicPage.model.js'); 
 
 /**
@@ -12,11 +10,13 @@ const DynamicPageModel = require('../model/DynamicPage.model.js');
 const addNewPage = async (req, res) => {
     try {
         const newPageData = req.body;
-        if (!newPageData.id || !newPageData.title || !newPageData.sections) {
+        console.log(newPageData);
+
+        if (!newPageData.title || !newPageData.sections) {
             return res.status(400).json({
                 status: "Error",
                 success: false,
-                message: 'Missing required page data: id, title, or sections.'
+                message: 'Missing required page data: title or sections.'
             });
         }
 
@@ -105,7 +105,7 @@ let getPage = async (req,res) =>{
 }
 
 
-let editPage = async() => {
+let editPage = async(req,res) => {
 try {
         const pageSlug = req.params.slug; 
 
