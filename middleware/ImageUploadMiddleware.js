@@ -6,8 +6,8 @@ const crypto = require("crypto");
 const mongoose = require("mongoose"); 
 const UploadedImageModel = require("../model/UploadedImage.model"); 
 
-// --- MongoDB Connection (Ensure this is connected in your main server.js) ---
-// We will export a function to connect if not already connected
+// --- MongoDB Connection Check---
+
 let isMongoConnected = false;
 async function connectToMongo() {
     if (mongoose.connection.readyState === 1) { // 1 means connected
@@ -60,8 +60,6 @@ const calculateHash = (buffer) => {
 const handleImageUploadAndDeduplication = async (req, res, next) => {
     if (!isMongoConnected) {
         console.error("MongoDB not connected. Image deduplication/persistence unavailable.");
-        // Decide how to handle: error out, or just proceed without deduplication/persistence.
-        // For this example, we'll error out.
         return res.status(503).json({ success: false, message: 'Database not available. Cannot process images.' });
     }
 
