@@ -1,6 +1,5 @@
 let mongoose = require("mongoose");
 
-
 let submenuLinkSchema = mongoose.Schema({
         title: {
                 type: String,

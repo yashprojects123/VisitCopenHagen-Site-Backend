@@ -11,7 +11,7 @@ async function seedAdmin() {
 
       await userModel.create({
         username: process.env.ADMIN_USERNAME || "admin",
-        email: process.env.ADMIN_EMAIL || "yashadmin123",
+        email: process.env.ADMIN_EMAIL || "yash123",
         password: hashedPassword,
         role: "admin",
       });

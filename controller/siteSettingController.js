@@ -21,8 +21,9 @@ let getBasicSiteSettings = async (req, res) => {
 
 let upsertBasicSiteSettings = async (req, res) => {
   console.log("Received request to upsert basic site settings:", req.body);
+  console.log(req.file)
   console.log("Logo image returning: :", req.file
-            ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+            ? `${req.protocol}://${req.get("host")}/uploads/${req.file.originalname}`
             : null);
   try {
     const updatedSettings = await basicSiteSettingsModel.findOneAndUpdate(
@@ -35,7 +36,7 @@ let upsertBasicSiteSettings = async (req, res) => {
           instagramUrl: req.body.instagramUrl,
           youtubeUrl: req.body.youtubeUrl,
           siteLogoUrl: req.file
-            ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+            ? `${req.protocol}://${req.get("host")}/uploads/${req.file.originalname}`
             : null
         }
       },

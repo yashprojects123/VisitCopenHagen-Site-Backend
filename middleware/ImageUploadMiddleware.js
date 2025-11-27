@@ -86,8 +86,10 @@ const handleImageUploadAndDeduplication = async (req, res, next) => {
             const fileHash = calculateHash(fileBuffer);
             const fileExtension = path.extname(file.originalname).toLowerCase();
             const finalFileName = `${fileHash}${fileExtension}`;
+            console.log(finalFileName)
             const filePathOnDisk = path.join(uploadDir, finalFileName);
-            const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${finalFileName}`;
+            const host = process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
+            const imageUrl = `${host}/uploads/${finalFileName}`;
 
 
             let isNewUpload = true; 
@@ -173,5 +175,5 @@ module.exports = {
     upload,
     handleImageUploadAndDeduplication,
     multerErrorHandler,
-    deleteImageMetadata // Export the new function for deletion
+    deleteImageMetadata
 };
