@@ -20,40 +20,49 @@ let getBasicSiteSettings = async (req, res) => {
 
 
 let upsertBasicSiteSettings = async (req, res) => {
-  console.log("Received request to upsert basic site settings:", req.body);
-  console.log(req.file)
-  console.log("Logo image returning: :", req.file
-            ? `${req.protocol}://${req.get("host")}/uploads/${req.file.originalname}`
-            : null);
   try {
+    console.log("Received request to upsert basic site settings:", req.body);
+
+    const {
+      siteName,
+      primaryEmailId,
+      facebookUrl,
+      instagramUrl,
+      youtubeUrl,
+      siteLogoUrl,
+    } = req.body;
+
     const updatedSettings = await basicSiteSettingsModel.findOneAndUpdate(
       {},
       {
         $set: {
-          siteName: req.body.siteName,
-          primaryEmailId: req.body.primaryEmailId,
-          facebookUrl: req.body.facebookUrl,
-          instagramUrl: req.body.instagramUrl,
-          youtubeUrl: req.body.youtubeUrl,
-          siteLogoUrl: req.file
-            ? `${req.protocol}://${req.get("host")}/uploads/${req.file.originalname}`
-            : null
-        }
+          siteName,
+          primaryEmailId,
+          facebookUrl,
+          instagramUrl,
+          youtubeUrl,
+          siteLogoUrl,   // store URL directly
+        },
       },
-      { new: true, upsert: true } // upsert: true will creates if not exists
+      { new: true, upsert: true }
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "Success",
-      data: updatedSettings
+      message: "Basic site settings saved.",
+      data: updatedSettings,
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error("Error saving settings:", error);
+
+    return res.status(500).json({
       status: "Error",
-      message: error.message
+      message: error.message,
     });
   }
 };
+
 
 
 module.exports = {

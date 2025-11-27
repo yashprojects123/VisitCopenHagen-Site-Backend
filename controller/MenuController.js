@@ -23,8 +23,6 @@ let createMenu = async(req,res) =>{
                 status_code: 400
                 })
         }
-
-
 }
 
 let updateMenu = async(req,res) =>{
