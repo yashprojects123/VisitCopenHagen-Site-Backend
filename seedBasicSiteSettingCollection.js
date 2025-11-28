@@ -8,7 +8,6 @@ async function seedBasicSiteSettingsCollection() {
 
     if (!settingsDocumentExist) {
      
-
       await basicSiteSettingsModel.create({
         siteKey: "VisitCopenhagen",
         siteName: "VisitCopenhagen"

@@ -41,7 +41,7 @@ let upsertBasicSiteSettings = async (req, res) => {
           facebookUrl,
           instagramUrl,
           youtubeUrl,
-          siteLogoUrl,   // store URL directly
+          siteLogoUrl,   
         },
       },
       { new: true, upsert: true }
@@ -52,18 +52,14 @@ let upsertBasicSiteSettings = async (req, res) => {
       message: "Basic site settings saved.",
       data: updatedSettings,
     });
-
   } catch (error) {
     console.error("Error saving settings:", error);
-
     return res.status(500).json({
       status: "Error",
       message: error.message,
     });
   }
 };
-
-
 
 module.exports = {
   upsertBasicSiteSettings,
