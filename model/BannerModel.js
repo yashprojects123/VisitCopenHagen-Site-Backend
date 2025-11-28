@@ -1,21 +1,21 @@
 const mongoose = require('mongoose');
 
-
 const bannerSchema = new mongoose.Schema({
-  // Array of image objects
+  // Array of image url
+  pageName: {
+    type: String,
+    required:true,
+  },
   imageUrls: [String],
   bannerKey: String,
   // Main title for the banner
-  mainTitle: {
-    type: String,
-  },
+  mainTitle: String,
   // Optional caption text
   caption: {
     type: String,
     default: '',
   },
-  
-  // Optional subtitle
+
   subTitle: {
     type: String,
     default: '',
@@ -26,7 +26,7 @@ const bannerSchema = new mongoose.Schema({
     default: '',
   }],
 }, {
-  // Add timestamps to automatically manage createdAt and updatedAt fields
+  // Timestamps to automatically manage createdAt and updatedAt fields
   timestamps: true,
 });
 
